@@ -18,18 +18,18 @@ class Block(pygame.sprite.Sprite):
 
     def __init__(self, color, width, height):
         super().__init__()
-        self.image = pygame.Surface([50,50])
+        self.image = pygame.Surface([25,25])
         self.image.fill(b)
         self.rect = self.image.get_rect()
-        self.x_vel = 5
-        self.y_vel = 5
+        self.x_vel = random.randrange(-5,5)
+        self.y_vel = random.randrange(-5,5)
 
     def update(self):
         self.rect.y += self.y_vel
         self.rect.x += self.x_vel
-        if self.rect.y > height or self.rect.y < 0:
+        if self.rect.y > height - 25 or self.rect.y < 0:
             self.y_vel = -self.y_vel
-        if self.rect.x > width or self.rect.x < 0:
+        if self.rect.x > width - 25 or self.rect.x < 0:
             self.x_vel = -self.x_vel
 
 
@@ -39,8 +39,8 @@ all_sprites_list = pygame.sprite.Group()
 # Creating blocks
 for x in range(10):
     block = Block(b, 50, 50)
-    block.rect.x = random.randrange(width)
-    block.rect.y = random.randrange(height)
+    block.rect.x = random.randrange(width - 25)
+    block.rect.y = random.randrange(height - 25)
     block_list.add(block)
     all_sprites_list.add(block)
 
@@ -53,7 +53,6 @@ while on:
             on = False
 
     display.fill(w)
-    #print(event)
     block_list.update()
     all_sprites_list.draw(display)
 
