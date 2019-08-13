@@ -15,6 +15,7 @@ w = (255, 255, 255)
 
 
 class Block(pygame.sprite.Sprite):
+    id = 0
 
     def __init__(self, color, width, height):
         super().__init__()
@@ -23,6 +24,12 @@ class Block(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.x_vel = random.randrange(-5,5)
         self.y_vel = random.randrange(-5,5)
+        self.id = Block.id
+        Block.id += 1
+
+    def reverse(self):
+        self.x_vel *= -1
+        self.y_vel *= -1
 
     def update(self):
         self.rect.y += self.y_vel
@@ -31,6 +38,15 @@ class Block(pygame.sprite.Sprite):
             self.x_vel *= -1
         if self.rect.y > height - 25 or self.rect.y < 0:
             self.y_vel *= -1
+
+        for box in block_list:
+            if self.id == box.id:
+                continue
+
+            collided = pygame.sprite.collide_rect(self, box)
+            if collided:
+                Block.reverse(self)
+                Block.reverse(box)
 
 
 all_sprites_list = pygame.sprite.Group()
@@ -44,7 +60,7 @@ for x in range(10):
     block_list.add(block)
     all_sprites_list.add(block)
 
-# Running the game
+# Running the sim
 on = True
 while on:
     for event in pygame.event.get():
