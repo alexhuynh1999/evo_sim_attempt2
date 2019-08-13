@@ -77,7 +77,7 @@ class Block(pygame.sprite.Sprite):
             if self.id == box.id:
                 continue
 
-            collided = pygame.sprite.collide_rect_ratio(1)
+            collided = pygame.sprite.collide_rect(self, box)
             if collided:
                 Block.hascollided(self, box)
         self.rect.y += self.y_vel
