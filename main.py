@@ -7,12 +7,11 @@ pygame.init()
 width = 1600
 height = 900
 display = pygame.display.set_mode((width, height))
-pygame.display.set_caption('Evolution Simulator Attempt 2')
+pygame.display.set_caption('Evolution Simulator')
 clock = pygame.time.Clock()
 # Color
 b = (0, 0, 0)
 w = (255, 255, 255)
-
 
 class Block(pygame.sprite.Sprite):
     id = 0
@@ -32,56 +31,7 @@ class Block(pygame.sprite.Sprite):
         Block.id += 1
         self.fitness = 0
 
-    # Fun buggy physics, but not particularly useful for what I want to do.
-    # def hascollided(self, box):
-    #     # Collisions in the x-direction
-    #     if (self.x_vel > 0 and box.x_vel < 0) or (self.x_vel < 0 and box.x_vel > 0):
-    #         self.x_vel *= -1
-    #         box.x_vel *= -1
-    #     # Wonky physics, but at least the momentum is conserved
-    #     xp = self.x_vel + box.x_vel
-    #     if self.x_vel > 0 and box.x_vel > 0:
-    #         if self.x_vel > box.x_vel:
-    #             box.x_vel = 0.75 * xp
-    #             self.x_vel = 0.25 * xp
-    #         else:
-    #             box.x_vel = 0.25 * xp
-    #             self.x_vel = 0.75 * xp
-    #     if self.x_vel < 0 and box.x_vel < 0:
-    #         if self.x_vel > box.x_vel:
-    #             box.x_vel = 0.25 * xp
-    #             self.x_vel = 0.75 * xp
-    #         else:
-    #             box.x_vel = 0.75 * xp
-    #             self.x_vel = 0.25 * xp
-    #
-    #     if self.y_vel > 0 and box.y_vel < 0 or self.y_vel < 0 and box.y_vel > 0:
-    #         self.y_vel *= -1
-    #         box.y_vel *= -1
-    #     yp = self.y_vel + box.y_vel
-    #     if self.y_vel > 0 and box.y_vel > 0:
-    #         if self.y_vel > box.y_vel:
-    #             box.y_vel = 0.75 * yp
-    #             self.y_vel = 0.25 * yp
-    #         else:
-    #             box.y_vel = 0.25 * yp
-    #             self.y_vel = 0.75 * yp
-    #     if self.y_vel < 0 and box.y_vel < 0:
-    #         if self.y_vel > box.y_vel:
-    #             box.y_vel = 0.25 * yp
-    #             self.y_vel = 0.75 * yp
-    #         else:
-    #             box.y_vel = 0.75 * yp
-    #             self.y_vel = 0.25 * yp
-
     def update(self):
-        # for box in block_list:
-        #     if self.id == box.id:
-        #         continue
-        #
-        #     collided = pygame.sprite.collide_rect(self, box)
-        #     if collided:
-        #       Block.hascollided(self, box)
         fed = pygame.sprite.spritecollide(self, food_list, True)
         if fed:
             self.fitness += 1
@@ -137,10 +87,12 @@ def mate():
         fitnessgram.append([block.id, block.fitness])
     fitnessgram.sort(key=sortSecond)
     dead = fitnessgram[:len(fitnessgram)//2]
+    alive = fitnessgram[len(fitnessgram)//2:]
     dead_id = [id[0] for id in dead]
     for block in block_list:
         if block.id in dead_id:
             block.kill()
+    generation++1
 
 
 # Running the sim
@@ -153,6 +105,7 @@ while on:
     if len(food_list) == 0:
         mate()
         createFood(25)
+
     display.fill(w)
     block_list.update()
     all_sprites_list.draw(display)
