@@ -85,7 +85,6 @@ class Block(pygame.sprite.Sprite):
         fed = pygame.sprite.spritecollide(self, food_list, True)
         if fed:
             self.fitness += 1
-            mate()
 
         self.rect.y += self.y_vel
         self.rect.x += self.x_vel
@@ -104,9 +103,20 @@ class Food(pygame.sprite.Sprite):
 
 
 all_sprites_list = pygame.sprite.Group()
+block_list = pygame.sprite.Group()
+food_list = pygame.sprite.Group()
+
+
+def createFood(amount):
+    for x in range(amount):
+        food = Food(b, 50, 50)
+        food.rect.x = random.randrange(width - 25)
+        food.rect.y = random.randrange(height - 25)
+        food_list.add(food)
+        all_sprites_list.add(food)
+
 
 # Creating blocks
-block_list = pygame.sprite.Group()
 for x in range(10):
     block = Block(b, 50, 50)
     block.rect.x = random.randrange(width - 25)
@@ -114,13 +124,7 @@ for x in range(10):
     block_list.add(block)
     all_sprites_list.add(block)
 # Creating food
-food_list = pygame.sprite.Group()
-for x in range(1):
-    food = Food(b, 50, 50)
-    food.rect.x = random.randrange(width - 25)
-    food.rect.y = random.randrange(height - 25)
-    food_list.add(food)
-    all_sprites_list.add(food)
+createFood(25)
 
 
 def sortSecond(val):
@@ -146,6 +150,9 @@ while on:
         if event.type == pygame.QUIT:
             on = False
 
+    if len(food_list) == 0:
+        mate()
+        createFood(25)
     display.fill(w)
     block_list.update()
     all_sprites_list.draw(display)
