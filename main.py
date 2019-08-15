@@ -19,17 +19,18 @@ class Block(pygame.sprite.Sprite):
 
     def __init__(self, color, width, height):
         super().__init__()
-        self.image = pygame.Surface([25,25])
+        self.image = pygame.Surface([25, 25])
         self.image.fill(
             (random.randrange(0, 255),
-            random.randrange(0, 255),
-            random.randrange(0, 255))
+             random.randrange(0, 255),
+             random.randrange(0, 255))
         )
         self.rect = self.image.get_rect()
         self.x_vel = random.randrange(-10, 10)
-        self.y_vel = random.randrange(-10,10)
+        self.y_vel = random.randrange(-10, 10)
         self.id = Block.id
         Block.id += 1
+        self.fitness = 0
 
     # Fun buggy physics, but not particularly useful for what I want to do.
     # def hascollided(self, box):
@@ -81,6 +82,11 @@ class Block(pygame.sprite.Sprite):
         #     collided = pygame.sprite.collide_rect(self, box)
         #     if collided:
         #       Block.hascollided(self, box)
+        fed = pygame.sprite.spritecollide(self, food_list, True)
+        if fed:
+            self.fitness += 1
+            mate()
+
         self.rect.y += self.y_vel
         self.rect.x += self.x_vel
         if self.rect.x > width - 25 or self.rect.x < 0:
@@ -92,12 +98,9 @@ class Block(pygame.sprite.Sprite):
 class Food(pygame.sprite.Sprite):
     def __init__(self, color, width, height):
         super().__init__()
-        self.image = pygame.Surface([25,25])
-        self.image.fill((139,69,19))
+        self.image = pygame.Surface([25, 25])
+        self.image.fill((139, 69, 19))
         self.rect = self.image.get_rect()
-
-    def update(self):
-        pygame.sprite.spritecollide(self,block_list, True)
 
 
 all_sprites_list = pygame.sprite.Group()
@@ -112,12 +115,29 @@ for x in range(10):
     all_sprites_list.add(block)
 # Creating food
 food_list = pygame.sprite.Group()
-for x in range(25):
+for x in range(1):
     food = Food(b, 50, 50)
     food.rect.x = random.randrange(width - 25)
     food.rect.y = random.randrange(height - 25)
     food_list.add(food)
     all_sprites_list.add(food)
+
+
+def sortSecond(val):
+    return val[1]
+
+
+def mate():
+    fitnessgram = []
+    for block in block_list:
+        fitnessgram.append([block.id, block.fitness])
+    fitnessgram.sort(key=sortSecond)
+    dead = fitnessgram[:len(fitnessgram)//2]
+    dead_id = [id[0] for id in dead]
+    for block in block_list:
+        if block.id in dead_id:
+            block.kill()
+
 
 # Running the sim
 on = True
@@ -128,8 +148,6 @@ while on:
 
     display.fill(w)
     block_list.update()
-    food_list.update()
     all_sprites_list.draw(display)
-
     pygame.display.update()
     clock.tick(60)
