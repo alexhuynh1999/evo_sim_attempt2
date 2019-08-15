@@ -7,11 +7,13 @@ pygame.init()
 width = 1600
 height = 900
 display = pygame.display.set_mode((width, height))
-pygame.display.set_caption('Evolution Simulator')
+generation = 0
+pygame.display.set_caption('Evolution Simulator | Generation ' + str(generation))
 clock = pygame.time.Clock()
 # Color
 b = (0, 0, 0)
 w = (255, 255, 255)
+
 
 class Block(pygame.sprite.Sprite):
     id = 0
@@ -81,7 +83,7 @@ def sortSecond(val):
     return val[1]
 
 
-def mate():
+def thanos():
     fitnessgram = []
     for block in block_list:
         fitnessgram.append([block.id, block.fitness])
@@ -92,7 +94,6 @@ def mate():
     for block in block_list:
         if block.id in dead_id:
             block.kill()
-    generation++1
 
 
 # Running the sim
@@ -103,8 +104,10 @@ while on:
             on = False
 
     if len(food_list) == 0:
-        mate()
+        thanos()
         createFood(25)
+        generation += 1
+        pygame.display.set_caption('Evolution Simulator | Generation ' + str(generation))
 
     display.fill(w)
     block_list.update()
