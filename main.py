@@ -7,8 +7,8 @@ pygame.init()
 width = 1600
 height = 900
 display = pygame.display.set_mode((width, height))
-generation = 0
-pygame.display.set_caption('Evolution Simulator | Generation ' + str(generation))
+day = 0
+pygame.display.set_caption('Evolution Simulator | Day ' + str(day))
 clock = pygame.time.Clock()
 # Color
 b = (0, 0, 0)
@@ -106,8 +106,8 @@ while on:
     if len(food_list) == 0:
         thanos()
         createFood(25)
-        generation += 1
-        pygame.display.set_caption('Evolution Simulator | Generation ' + str(generation))
+        day += 1
+        pygame.display.set_caption('Evolution Simulator | Day ' + str(day))
 
     display.fill(w)
     block_list.update()
