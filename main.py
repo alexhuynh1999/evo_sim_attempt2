@@ -1,11 +1,13 @@
 import pygame
 import random
+import math
+import numpy as np
 
 pygame.init()
 
 # Display Settings
-width = 1600
-height = 900
+width = 800
+height = 600
 display = pygame.display.set_mode((width, height))
 day = 0
 pygame.display.set_caption('Evolution Simulator | Day ' + str(day))
@@ -27,8 +29,9 @@ class Block(pygame.sprite.Sprite):
              random.randrange(0, 255))
         )
         self.rect = self.image.get_rect()
-        self.x_vel = random.randrange(-10, 10)
-        self.y_vel = random.randrange(-10, 10)
+        self.x_vel = random.randrange(1, 10)
+        self.y_vel = random.randrange(1, 10)
+        self.vision = random.randrange(50, 250)
         self.id = Block.id
         Block.id += 1
         self.fitness = 0
@@ -38,12 +41,39 @@ class Block(pygame.sprite.Sprite):
         if fed:
             self.fitness += 1
 
-        self.rect.y += self.y_vel
-        self.rect.x += self.x_vel
         if self.rect.x > width - 25 or self.rect.x < 0:
             self.x_vel *= -1
         if self.rect.y > height - 25 or self.rect.y < 0:
             self.y_vel *= -1
+
+        pygame.draw.circle(display,(255,0,0), (self.rect.x, self.rect.y), self.vision, 4)
+
+        closest_food = []
+        for food in food_list:
+            x = food.rect.x
+            y = food.rect.y
+            d_x = self.rect.x - x
+            d_y = self.rect.y - y
+            dist = math.sqrt(d_x ** 2 + d_y ** 2)
+            if dist < self.vision:
+                closest_food.append((food, dist, d_x, d_y))
+        closest_food.sort(key=sortSecond)
+        projection = [self.x_vel, self.y_vel]
+        if len(closest_food) >= 1:
+            x, y = closest_food[0][2], closest_food[0][3]
+            length = closest_food[0][1]
+            norm = (x / length, y / length)
+            speed = (self.x_vel, self.y_vel)
+            dot = round(np.dot(norm, speed))
+            if dot == 0:
+                projection[0] = 0
+            elif dot == 1:
+                projection[1] = 0
+            else:
+                projection = [norm[0] * dot + 1 * np.sign(norm[0] * dot), norm[1] * dot + 1 * np.sign(norm[1] * dot)]
+
+        self.rect.x += projection[0]
+        self.rect.y += projection[1]
 
 
 class Food(pygame.sprite.Sprite):
